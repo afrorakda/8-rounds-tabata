@@ -11,6 +11,7 @@
             --accent: #eee;
             --input-bg: #fafafa;
             --radius: 15px;
+            --rest-green: #e8f5e9; /* あっさり薄緑 */
         }
 
         * {
@@ -18,7 +19,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* WORK/REST States (Body color must be defined first) */
         body {
             margin: 0;
             padding: 0;
@@ -28,14 +28,13 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.3s ease; /* 背景変化をスムーズに */
         }
 
-        /* Specific State Colors (image_3.png logic) */
-        body.work { background-color: #f5f5f5; }
-        body.rest { background-color: var(--bg); }
+        /* 最終調整：REST（休み）の時だけ色をつける設定 */
+        body.work { background-color: var(--bg); } /* 動く時は真っ白 */
+        body.rest { background-color: var(--rest-green); } /* 休む時は薄緑 */
 
-        /* iOS Safari Fix for Inputs */
         input {
             -webkit-appearance: none;
             -webkit-text-fill-color: var(--main);
@@ -62,7 +61,6 @@
             max-width: 400px;
             margin: 0 auto;
             width: 100%;
-            /* Strict Rule Fix: Make container background transparent so body color shows through */
             background: transparent;
         }
 
@@ -140,7 +138,7 @@
             text-align: center;
             font-size: 0.8rem;
             line-height: 1.5;
-            background: transparent; /* Rule: Footer must also be transparent */
+            background: transparent;
         }
 
         .support-links {
@@ -212,8 +210,6 @@
             background: none;
             border: none;
             padding: 0;
-            width: auto;
-            height: auto;
         }
     </style>
 </head>
@@ -275,16 +271,14 @@
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
 
-    // Load & Save, and Select-all on focus
-    const inputs = ['workInput', 'restInput', 'setsInput'];
-    inputs.forEach(id => {
+    // Load/Save and Auto-select logic
+    const inputIds = ['workInput', 'restInput', 'setsInput'];
+    inputIds.forEach(id => {
         const input = document.getElementById(id);
         const saved = localStorage.getItem(id);
         if (saved) input.value = saved;
         
-        // Final Stage Rule: Auto select on tap
         input.addEventListener('focus', () => input.select());
-        
         input.addEventListener('input', (e) => {
             localStorage.setItem(id, e.target.value);
             updateRoundDisplay();
@@ -298,7 +292,6 @@
 
     function notify(type) {
         if ("vibrate" in navigator) navigator.vibrate(type === 'work' ? [300, 100, 300] : [500]);
-        
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
@@ -317,7 +310,7 @@
             if (isWorking) {
                 isWorking = false;
                 timeLeft = parseInt(document.getElementById('restInput').value);
-                document.body.className = 'rest';
+                document.body.className = 'rest'; // 薄緑へ
                 statusLabel.innerText = 'REST';
                 notify('rest');
             } else {
@@ -328,7 +321,7 @@
                 }
                 isWorking = true;
                 timeLeft = parseInt(document.getElementById('workInput').value);
-                document.body.className = 'work';
+                document.body.className = 'work'; // 白へ
                 statusLabel.innerText = 'WORK';
                 notify('work');
             }
@@ -354,7 +347,6 @@
         isWorking = true;
         totalSets = parseInt(document.getElementById('setsInput').value) || 0;
         timeLeft = parseInt(document.getElementById('workInput').value);
-        
         if (totalSets <= 0 || timeLeft <= 0) return;
 
         setupArea.classList.add('hidden');
@@ -367,16 +359,11 @@
         notify('work');
         display.innerText = timeLeft < 10 ? '0' + timeLeft : timeLeft;
         timeLeft--;
-        
         timer = setInterval(tick, 1000);
     };
 
     stopBtn.onclick = () => {
         clearInterval(timer);
-        resetUI();
-    };
-
-    function resetUI() {
         setupArea.classList.remove('hidden');
         startBtn.classList.remove('hidden');
         stopBtn.classList.add('hidden');
@@ -385,7 +372,7 @@
         display.innerText = '00';
         currentSet = 1;
         updateRoundDisplay();
-    }
+    };
 
     updateRoundDisplay();
 </script>
