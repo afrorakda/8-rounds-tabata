@@ -126,7 +126,7 @@
             margin-top: 15px;
         }
 
-        /* State Styles */
+        /* State Styles (WORK / REST) */
         body.work { background-color: #f5f5f5; }
         body.rest { background-color: var(--bg); }
         .hidden { display: none !important; }
@@ -143,23 +143,33 @@
             display: flex;
             justify-content: center;
             gap: 10px;
+            width: 100%;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .kofi-button {
+            flex: 1;
             background: var(--main);
             color: #fff;
             text-decoration: none;
-            padding: 10px 18px;
+            padding: 10px;
             border-radius: var(--radius);
             font-weight: bold;
             font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .install-btn {
+            width: auto;
+            min-width: 100px;
             background: var(--accent);
             color: var(--main);
             border: none;
-            padding: 10px 18px;
+            padding: 10px;
             border-radius: var(--radius);
             font-weight: bold;
             cursor: pointer;
@@ -178,11 +188,27 @@
 
         .modal-content {
             background: #fff;
-            padding: 30px;
+            padding: 40px 30px 30px 30px;
             border-radius: var(--radius);
             max-width: 320px;
             width: 100%;
             text-align: center;
+            position: relative;
+        }
+
+        .modal-close-icon {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--main);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: auto;
+            height: auto;
         }
     </style>
 </head>
@@ -223,10 +249,10 @@
 
 <div id="modal" onclick="this.style.display='none'">
     <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close-icon" onclick="document.getElementById('modal').style.display='none'">✕</button>
         <h3 style="margin-top:0">Install App</h3>
         <p>🍏 Safari: Share > Add to Home Screen</p>
         <p>🤖 Chrome: Menu > Install App</p>
-        <button onclick="document.getElementById('modal').style.display='none'" style="margin-top:10px; padding:10px 20px; border-radius:15px; border:none; background:#333; color:#fff; font-weight:bold;">Close</button>
     </div>
 </div>
 
@@ -244,12 +270,17 @@
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
 
-    // Load & Save Logic
+    // Select-all logic for inputs on focus
     const inputs = ['workInput', 'restInput', 'setsInput'];
     inputs.forEach(id => {
+        const input = document.getElementById(id);
         const saved = localStorage.getItem(id);
-        if (saved) document.getElementById(id).value = saved;
-        document.getElementById(id).addEventListener('input', (e) => {
+        if (saved) input.value = saved;
+        
+        // Auto select on tap
+        input.addEventListener('focus', () => input.select());
+        
+        input.addEventListener('input', (e) => {
             localStorage.setItem(id, e.target.value);
             updateRoundDisplay();
         });
@@ -261,10 +292,8 @@
     }
 
     function notify(type) {
-        // Vibrate
         if ("vibrate" in navigator) navigator.vibrate(type === 'work' ? [300, 100, 300] : [500]);
         
-        // Simple Beep
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
