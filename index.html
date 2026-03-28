@@ -200,11 +200,11 @@
             position: relative; 
         }
 
-        /* ✕ボタンの配置を右上に固定（CSS修正） */
+        /* ✕ボタンの配置を完全に右上に修正（CSS修正） */
         .close-icon {
             position: absolute;
-            top: 15px;  /* 上から15px */
-            right: 20px; /* 右から20px */
+            top: 15px;  /* 物理的に上から15px */
+            right: 15px; /* 物理的に右から15px */
             font-size: 1.5rem; 
             color: #aaa;
             cursor: pointer;
@@ -212,7 +212,7 @@
             line-height: 1;
             background: none;
             border: none;
-            z-index: 10; /* 他の要素より上に */
+            z-index: 20; /* 確実に最前面へ */
         }
     </style>
 </head>
@@ -277,7 +277,6 @@
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
 
-    // Load/Save and Auto-select logic
     const inputIds = ['workInput', 'restInput', 'setsInput'];
     inputIds.forEach(id => {
         const input = document.getElementById(id);
