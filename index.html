@@ -3,143 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>8 Rounds Tabata - Fridge Combo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="image_35.png">
-    <link rel="icon" type="image/png" href="image_35.png">
+    <link rel="icon" href="image_35.png">
+    <title>TapMask - Fridge Combo</title>
     <style>
-        :root { 
-            --bg: #fff; 
-            --main: #333; 
-            --accent: #eee; 
-            --input-bg: #fafafa; 
-            --radius: 15px; 
-            --rest-green: #e8f5e9; 
+        :root {
+            --bg: #fff;
+            --main: #333;
+            --accent: #eee;
+            --input-bg: #fafafa;
+            --radius: 15px;
+            --success: #2ecc71;
         }
 
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
-            user-select: none;
+            margin: 0; padding: 0;
+            user-select: none; -webkit-user-select: none;
         }
 
-        body { 
-            margin: 0; 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg); color: var(--main);
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
             padding: calc(env(safe-area-inset-top, 20px) + 10px) 20px env(safe-area-inset-bottom, 20px);
-            background-color: var(--bg); 
-            color: var(--main); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
-            transition: background-color 0.3s ease; 
-            align-items: center;
+            overflow: hidden;
         }
 
-        .fridge-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; flex-grow: 1; }
-
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px; 
-            width: 100%;
-        }
-
-        h1 { font-size: 1.2rem; font-weight: 900; letter-spacing: -0.5px; margin: 0; }
+        .fridge-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; flex-grow: 1; height: 100%; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-shrink: 0; }
+        h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; }
 
         .hub-link {
             text-decoration: none; font-size: 0.8rem; font-weight: 800; color: var(--main);
             background: var(--accent); padding: 8px 12px; border-radius: 10px;
         }
 
-        body.work { background-color: var(--bg); }
-        body.rest { background-color: var(--rest-green); }
+        .subtitle { font-size: 0.8rem; color: #666; font-weight: 500; margin-bottom: 15px; text-align: center; flex-shrink: 0; }
 
-        .timer-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
-        #status { font-weight: 900; font-size: 1.5rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        #display { font-size: 8rem; font-weight: 900; margin: 0; line-height: 1; }
-        #round-info { font-weight: 800; font-size: 1.1rem; margin-bottom: 40px; color: #999; }
-
-        .settings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-bottom: 30px; }
-        .input-group { display: flex; flex-direction: column; align-items: center; }
-        .input-group label { font-size: 0.65rem; font-weight: 900; color: #bbb; text-transform: uppercase; }
-        
-        input { 
-            -webkit-appearance: none; 
-            -webkit-text-fill-color: var(--main) !important; 
-            opacity: 1 !important; 
-            border: 2px solid var(--accent); 
-            background: var(--input-bg); 
-            color: var(--main); 
-            font-size: 1.8rem; 
-            font-weight: 800; 
-            text-align: center; 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: var(--radius); 
-            margin-top: 5px; 
-            outline: none; 
+        .workspace {
+            flex-grow: 1; width: 100%; position: relative;
+            background: var(--input-bg); border: 2px dashed var(--accent);
+            border-radius: var(--radius); overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .main-btn { 
-            -webkit-appearance: none; 
-            background: var(--main); 
-            color: #fff; 
-            border: none; 
-            padding: 22px; 
-            width: 100%; 
-            border-radius: var(--radius); 
-            font-size: 1.4rem; 
-            font-weight: 900; 
-            cursor: pointer; 
-            transition: transform 0.1s; 
-        }
-        .main-btn:active { transform: scale(0.97); }
-        #stopBtn { background: var(--accent); color: var(--main); margin-top: 15px; }
-        .hidden { display: none !important; }
+        #drop-zone { text-align: center; padding: 20px; pointer-events: none; }
+        .drop-text { font-size: 0.9rem; font-weight: 800; color: #bbb; }
+        .drop-sub { font-size: 0.7rem; color: #ccc; margin-top: 5px; font-weight: 600; }
 
-        /* Footer & Buttons */
-        .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 40px; width: 100%; }
-        .kofi-btn, .home-btn { 
-            display: flex; align-items: center; justify-content: center; width: 100%; padding: 16px; 
-            border-radius: var(--radius); font-weight: 800; font-size: 0.9rem; text-decoration: none; border: none; cursor: pointer; 
+        #main-canvas { max-width: 100%; max-height: 100%; cursor: crosshair; touch-action: none; }
+
+        .toolbar { display: none; width: 100%; gap: 10px; margin-top: 15px; flex-shrink: 0; }
+        .tool-btn {
+            flex: 1; padding: 18px; border-radius: var(--radius);
+            font-weight: 800; font-size: 1rem; cursor: pointer; border: none; transition: 0.2s;
+        }
+        #undo-btn { background: var(--accent); color: var(--main); }
+        #save-btn { background: var(--main); color: #fff; }
+        .btn-success { background: var(--success) !important; color: #fff !important; }
+
+        .guide { font-size: 11px; color: #aaa; text-align: center; margin-top: 10px; font-weight: 600; line-height: 1.4; flex-shrink: 0; }
+
+        .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px; flex-shrink: 0; }
+        .kofi-btn, .home-btn {
+            width: 100%; max-width: 250px; padding: 12px; border-radius: var(--radius);
+            font-weight: 800; font-size: 0.85rem; text-decoration: none; text-align: center; border: none; cursor: pointer;
         }
         .kofi-btn { background: #fff; color: var(--main); border: 2px solid var(--main); }
         .home-btn { background: var(--accent); color: var(--main); }
 
-        footer { padding: 30px 0; text-align: center; font-size: 0.75rem; color: #bbb; line-height: 1.8; font-weight: 600; width: 100%; }
+        footer { font-size: 0.7rem; color: #bbb; text-align: center; padding: 15px 0; font-weight: 600; flex-shrink: 0; }
         footer a { color: inherit; text-decoration: underline; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 30px; border-radius: var(--radius); max-width: 320px; width: 90%; position: relative; }
-        .modal-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 1.1rem; font-weight: 900; }
-        .close-icon { position: absolute; top: 15px; right: 15px; font-size: 1.8rem; color: #ccc; cursor: pointer; line-height: 1; }
+        #file-input { display: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 3000; }
+        .modal-content { background: #fff; padding: 30px; border-radius: var(--radius); width: 85%; max-width: 320px; position: relative; }
+        .close-icon { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; color: #aaa; cursor: pointer; font-weight: bold; }
     </style>
 </head>
-<body class="work">
+<body>
 
 <div class="fridge-container">
     <header>
-        <h1>8 Rounds Tabata</h1>
+        <h1>TapMask</h1>
         <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
     </header>
 
-    <div class="timer-box">
-        <div id="status">8 ROUNDS TABATA</div>
-        <div id="display">00</div>
-        <div id="round-info">SET: 1 / 8</div>
+    <p class="subtitle">1-finger: Mask / 2-finger: Zoom & Move.</p>
 
-        <div id="setup-area" class="settings-grid">
-            <div class="input-group"><label>Work(s)</label><input type="number" id="workInput" value="20" inputmode="numeric"></div>
-            <div class="input-group"><label>Rest(s)</label><input type="number" id="restInput" value="10" inputmode="numeric"></div>
-            <div class="input-group"><label>Sets</label><input type="number" id="setsInput" value="8" inputmode="numeric"></div>
+    <div class="workspace" id="workspace" onclick="if(!currentImg) document.getElementById('file-input').click()">
+        <div id="drop-zone">
+            <p class="drop-text">Tap to Select Photo</p>
+            <p class="drop-sub">Local process / Privacy focused</p>
         </div>
-
-        <button id="startBtn" class="main-btn">START</button>
-        <button id="stopBtn" class="main-btn hidden">STOP</button>
+        <canvas id="main-canvas"></canvas>
     </div>
+    <input type="file" id="file-input" accept="image/*">
+
+    <div class="toolbar" id="toolbar">
+        <button class="tool-btn" id="undo-btn">Undo</button>
+        <button class="tool-btn" id="save-btn">Save Image</button>
+    </div>
+
+    <p class="guide">No setting required. Just tap and save.</p>
 
     <div class="footer-btns">
         <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">☕️buy me a coffee</a>
@@ -156,113 +128,212 @@
 <div id="modal" class="modal">
     <div class="modal-content">
         <span class="close-icon" id="closeModal">&times;</span>
-        <div class="modal-title-row"><span>📱</span><strong>Install</strong></div>
-        <p style="margin-bottom: 20px; color: #666; font-size: 0.9rem;">Add to your home screen.</p>
-        <div style="font-size: 0.9rem; line-height: 1.6; color: #333;">
-            <p>🍏 <strong>iPhone:</strong> Share > Add to Home Screen</p>
-            <p style="margin-top:10px;">🤖 <strong>Android:</strong> Menu > Add to home screen</p>
+        <h3 style="margin-top:0; font-weight:800; text-align:center">📱 Install</h3>
+        <p style="margin: 15px 0; color: #666; font-size: 0.9rem; text-align:center">Add to home screen.</p>
+        <div style="font-size: 0.9rem; line-height: 1.6;">
+            <p>🍏 <b>iPhone (Safari):</b><br>Share > Add to Home Screen</p><br>
+            <p>🤖 <b>Android (Chrome):</b><br>Menu (⋮) > Add to home screen</p>
         </div>
     </div>
 </div>
 
 <script>
-    let timer = null, timeLeft = 0, currentSet = 1, totalSets = 8, isWorking = true;
-    const statusLabel = document.getElementById('status'), display = document.getElementById('display'), roundInfo = document.getElementById('round-info'), setupArea = document.getElementById('setup-area'), startBtn = document.getElementById('startBtn'), stopBtn = document.getElementById('stopBtn');
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const workspace = document.getElementById('workspace');
+    const fileIn = document.getElementById('file-input');
+    const toolbar = document.getElementById('toolbar');
+    const undoBtn = document.getElementById('undo-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const dropZone = document.getElementById('drop-zone');
 
-    // Input Logic
-    const inputIds = ['workInput', 'restInput', 'setsInput'];
-    inputIds.forEach(id => {
-        const input = document.getElementById(id);
-        const saved = localStorage.getItem(id);
-        if (saved) input.value = saved;
-        input.addEventListener('focus', () => input.select());
-        input.addEventListener('input', (e) => { localStorage.setItem(id, e.target.value); updateRoundDisplay(); });
+    let currentImg = null;
+    let masks = [];
+    let scale = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    let touchStartDist = 0;
+    let touchStartPos = { x: 0, y: 0 };
+    let isDragging = false;
+    let cachedBlobUrl = null;
+
+    fileIn.onchange = (e) => handleFile(e.target.files[0]);
+
+    function handleFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const MAX = 4000;
+                let w = img.width, h = img.height;
+                if (w > MAX || h > MAX) {
+                    const r = Math.min(MAX/w, MAX/h);
+                    w *= r; h *= r;
+                    const oc = document.createElement('canvas');
+                    oc.width = w; oc.height = h;
+                    oc.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const safeImg = new Image();
+                    safeImg.onload = () => { currentImg = safeImg; initWorkspace(); };
+                    safeImg.src = oc.toDataURL('image/jpeg', 0.9);
+                } else {
+                    currentImg = img; initWorkspace();
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function initWorkspace() {
+        dropZone.style.display = 'none';
+        toolbar.style.display = 'flex';
+        masks = [];
+        const wr = workspace.clientWidth / currentImg.width;
+        const hr = workspace.clientHeight / currentImg.height;
+        scale = Math.min(wr, hr, 1);
+        offsetX = (workspace.clientWidth - currentImg.width * scale) / 2;
+        offsetY = (workspace.clientHeight - currentImg.height * scale) / 2;
+        draw();
+    }
+
+    function draw() {
+        if (!currentImg) return;
+        canvas.width = workspace.clientWidth;
+        canvas.height = workspace.clientHeight;
+        ctx.save();
+        ctx.translate(offsetX, offsetY);
+        ctx.scale(scale, scale);
+        ctx.drawImage(currentImg, 0, 0);
+        
+        const maskSize = Math.max(currentImg.width, currentImg.height) * 0.08;
+        masks.forEach(m => applyMosaic(m.x, m.y, maskSize));
+        ctx.restore();
+        updateCache();
+    }
+
+    function applyMosaic(x, y, size) {
+        const x_start = x - size / 2;
+        const y_start = y - size / 2;
+        const r = 15;
+        const granularity = 12;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x_start + r, y_start);
+        ctx.arcTo(x_start + size, y_start, x_start + size, y_start + size, r);
+        ctx.arcTo(x_start + size, y_start + size, x_start, y_start + size, r);
+        ctx.arcTo(x_start, y_start + size, x_start, y_start, r);
+        ctx.arcTo(x_start, y_start, x_start + size, y_start, r);
+        ctx.closePath();
+        ctx.clip();
+
+        const oc = document.createElement('canvas');
+        oc.width = granularity; oc.height = granularity;
+        oc.getContext('2d').drawImage(currentImg, x_start, y_start, size, size, 0, 0, granularity, granularity);
+        
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(oc, 0, 0, granularity, granularity, x_start, y_start, size, size);
+        ctx.imageSmoothingEnabled = true;
+        ctx.restore();
+    }
+
+    canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            isDragging = true;
+            touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        } else if (e.touches.length === 2) {
+            isDragging = false;
+            touchStartDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        }
     });
 
-    function updateRoundDisplay() { 
-        totalSets = parseInt(document.getElementById('setsInput').value) || 0; 
-        roundInfo.innerText = `SET: ${currentSet} / ${totalSets}`; 
-    }
-
-    function notify(type) {
-        if ("vibrate" in navigator) navigator.vibrate(type === 'work' ? [300, 100, 300] : [500]);
-        try { 
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
-            const osc = audioCtx.createOscillator(); 
-            const gain = audioCtx.createGain(); 
-            osc.connect(gain); 
-            gain.connect(audioCtx.destination); 
-            osc.frequency.value = type === 'work' ? 880 : 440; 
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); 
-            osc.start(); 
-            osc.stop(audioCtx.currentTime + 0.3); 
-        } catch(e) {}
-    }
-
-    function tick() {
-        if (timeLeft <= 0) {
-            if (isWorking) { 
-                isWorking = false; 
-                timeLeft = parseInt(document.getElementById('restInput').value); 
-                document.body.className = 'rest'; 
-                statusLabel.innerText = 'REST'; 
-                notify('rest'); 
-            } else { 
-                currentSet++; 
-                if (currentSet > totalSets) { finish(); return; } 
-                isWorking = true; 
-                timeLeft = parseInt(document.getElementById('workInput').value); 
-                document.body.className = 'work'; 
-                statusLabel.innerText = 'WORK'; 
-                notify('work'); 
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (e.touches.length === 1 && isDragging) {
+            const dx = e.touches[0].clientX - touchStartPos.x;
+            const dy = e.touches[0].clientY - touchStartPos.y;
+            if (Math.hypot(dx, dy) > 5) {
+                offsetX += dx; offsetY += dy;
+                touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                draw();
             }
-            updateRoundDisplay();
+        } else if (e.touches.length === 2) {
+            const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+            const zoom = dist / touchStartDist;
+            scale *= zoom;
+            touchStartDist = dist;
+            draw();
         }
-        display.innerText = timeLeft < 10 ? '0' + timeLeft : timeLeft; 
-        timeLeft--;
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+        if (e.touches.length === 0 && isDragging) {
+            const dx = e.changedTouches[0].clientX - touchStartPos.x;
+            const dy = e.changedTouches[0].clientY - touchStartPos.y;
+            if (Math.hypot(dx, dy) < 10) {
+                const rect = canvas.getBoundingClientRect();
+                const tx = (e.changedTouches[0].clientX - rect.left - offsetX) / scale;
+                const ty = (e.changedTouches[0].clientY - rect.top - offsetY) / scale;
+                masks.push({ x: tx, y: ty });
+                draw();
+            }
+        }
+        isDragging = false;
+    });
+
+    undoBtn.onclick = () => { if (masks.length > 0) { masks.pop(); draw(); } };
+
+    async function updateCache() {
+        if (!currentImg) return;
+        if (cachedBlobUrl) URL.revokeObjectURL(cachedBlobUrl);
+        
+        const sc = document.createElement('canvas');
+        sc.width = currentImg.width; sc.height = currentImg.height;
+        const sctx = sc.getContext('2d');
+        sctx.drawImage(currentImg, 0, 0);
+        
+        const maskSize = Math.max(currentImg.width, currentImg.height) * 0.08;
+        const granularity = 12;
+        const r = 15;
+
+        masks.forEach(m => {
+            const x_s = m.x - maskSize / 2;
+            const y_s = m.y - maskSize / 2;
+            sctx.save();
+            sctx.beginPath();
+            sctx.moveTo(x_s + r, y_s);
+            sctx.arcTo(x_s + maskSize, y_s, x_s + maskSize, y_s + maskSize, r);
+            sctx.arcTo(x_s + maskSize, y_s + maskSize, x_s, y_s + maskSize, r);
+            sctx.arcTo(x_s, y_s + maskSize, x_s, y_s, r);
+            sctx.arcTo(x_s, y_s, x_s + maskSize, y_s, r);
+            sctx.closePath();
+            sctx.clip();
+            
+            const oc = document.createElement('canvas');
+            oc.width = granularity; oc.height = granularity;
+            oc.getContext('2d').drawImage(currentImg, x_s, y_s, maskSize, maskSize, 0, 0, granularity, granularity);
+            sctx.imageSmoothingEnabled = false;
+            sctx.drawImage(oc, 0, 0, granularity, granularity, x_s, y_s, maskSize, maskSize);
+            sctx.imageSmoothingEnabled = true;
+            sctx.restore();
+        });
+
+        sc.toBlob(blob => { cachedBlobUrl = URL.createObjectURL(blob); }, 'image/jpeg', 0.9);
     }
 
-    function finish() { 
-        clearInterval(timer); 
-        statusLabel.innerText = 'DONE!'; 
-        display.innerText = '00'; 
-        document.body.className = 'work'; 
-        setupArea.classList.remove('hidden'); 
-        startBtn.classList.remove('hidden'); 
-        stopBtn.classList.add('hidden'); 
-        notify('rest'); 
-    }
-
-    startBtn.onclick = () => {
-        currentSet = 1; isWorking = true; 
-        totalSets = parseInt(document.getElementById('setsInput').value) || 0; 
-        timeLeft = parseInt(document.getElementById('workInput').value);
-        if (totalSets <= 0 || timeLeft <= 0) return;
-        setupArea.classList.add('hidden'); 
-        startBtn.classList.add('hidden'); 
-        stopBtn.classList.remove('hidden');
-        document.body.className = 'work'; 
-        statusLabel.innerText = 'WORK'; 
-        updateRoundDisplay(); 
-        notify('work');
-        display.innerText = timeLeft < 10 ? '0' + timeLeft : timeLeft; 
-        timeLeft--;
-        timer = setInterval(tick, 1000);
+    saveBtn.onclick = () => {
+        if (!cachedBlobUrl) return;
+        const a = document.createElement('a');
+        a.download = `masked_${Date.now()}.jpg`;
+        a.href = cachedBlobUrl;
+        a.click();
+        const ot = saveBtn.textContent;
+        saveBtn.textContent = "Saved!";
+        saveBtn.classList.add('btn-success');
+        setTimeout(() => { saveBtn.textContent = ot; saveBtn.classList.remove('btn-success'); }, 1200);
     };
 
-    stopBtn.onclick = () => { 
-        clearInterval(timer); 
-        setupArea.classList.remove('hidden'); 
-        startBtn.classList.remove('hidden'); 
-        stopBtn.classList.add('hidden'); 
-        document.body.className = 'work'; 
-        statusLabel.innerText = 'TABATA'; 
-        display.innerText = '00'; 
-        currentSet = 1; 
-        updateRoundDisplay(); 
-    };
-
-    // Footer & Modal Logic
     document.getElementById('homeBtn').onclick = () => document.getElementById('modal').style.display = 'flex';
     document.getElementById('closeModal').onclick = () => document.getElementById('modal').style.display = 'none';
     window.onclick = (e) => { if (e.target == document.getElementById('modal')) document.getElementById('modal').style.display = 'none'; };
@@ -274,9 +345,10 @@
                 const data = await res.json();
                 if (data.footerHtml) document.getElementById('dynamicFooter').innerHTML = data.footerHtml;
             }
-        } catch(e) { /* Fallback to static HTML */ }
+        } catch(e) {}
     }
-    window.onload = () => { loadFooter(); updateRoundDisplay(); };
+    window.onload = loadFooter;
 </script>
+
 </body>
 </html>
